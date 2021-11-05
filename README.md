@@ -10,7 +10,7 @@ Example: Every time thread number 4 is active, it will flip bit number 4.<br>
 <br>
 The program uses a a mutex a lock and a condition variable to ensure<br>
 that one thread can not make more than one bit-flip in a row, without letting<br>
-at least one other tread make a bit flip.<br>
+at least one other tread make a bit-flip.<br>
 <br>
 After 200 operations the threads terminate, and the number is printed to standard output.<br>
 <br>
