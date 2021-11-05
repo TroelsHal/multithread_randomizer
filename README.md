@@ -1,7 +1,7 @@
 # multithread_randomizer
-Produces random integer (0-255) based on thread scheduling
+<b>Produces random integer (0-255) based on thread scheduling.</b>
 
-This program creates a number of threads.
+This program creates a number of threads.<br>
 Each thread is responsible for one bit in an 8-bit integer.
 Every time a thread is scheduled by the kernel, it flips its bit.
 
