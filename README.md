@@ -6,7 +6,6 @@ Produces a random integer (0-255) based on thread scheduling.
 
 ```bash
 make
-make run
 ```
 
 ## Requirements
