@@ -4,42 +4,50 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// Mutex to ensure exclusive access to shared counter and number
 pthread_mutex_t counter_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+// Condition variable to synchronize threads
 pthread_cond_t condition;
 
-int counter;
-unsigned int number;
+int counter; // Count of iterations
+unsigned int number; // Resulting random number
 
-// Thread number 9 doesn't do anything: It XORs with 0.
-// But if we only had 8 threads, then there would always be exactly
-// 200 bit-flips, and we would always end up with an even number of
-// 1-bits and an even number of 0-bits. 
-int num_threads = 9;
+// There is an extra (9th) thread to make sure that the number of
+// bit-flips is not always an equal number.
+int num_threads = 9; 
 
 void* worker (void *arg) {
-    int index = (int)(intptr_t)arg; // Correct way to convert void* to int
+    int index = (int)(intptr_t)arg;
     int shift = 128 >> index;
-    
+
     while(1) {
+        // Acquire lock to protect shared data
         assert(pthread_mutex_lock(&counter_mutex) == 0);
+
+        // Check termination condition, release lock, and exit if done
         if (counter >= 200) {
             assert(pthread_mutex_unlock(&counter_mutex) == 0);
             break;    
         }
 
+        // Increment shared counter
         counter++;
+
+        // XOR operation on shared number
         number = number ^ shift;
 
-        //The same thread should not have the lock twice.
-        //So it wakes up other threads, and then goes to sleep itself.
+        // Signal all waiting threads to proceed
         assert(pthread_cond_broadcast(&condition) == 0);
+
+        // Wait for a signal from another thread, releasing lock during wait
         assert(pthread_cond_wait(&condition, &counter_mutex) == 0);
 
+        // Release lock
         assert(pthread_mutex_unlock(&counter_mutex) == 0);
     }
 
-    //Before terminating, wake up other threads,
-    //so the last thread alive is not left sleeping forever.
+    // Signal remaining threads to avoid any waiting forever
     assert(pthread_cond_broadcast(&condition) == 0);
     return NULL;
 }
@@ -48,17 +56,25 @@ int main() {
     counter = 0;
     number = 0;
 
+    // Allocate memory for thread handles
     pthread_t *threads = calloc(num_threads, sizeof(pthread_t));
-    assert (pthread_cond_init(&condition, NULL) == 0);
 
+    // Initialize condition variable
+    assert(pthread_cond_init(&condition, NULL) == 0);
+
+    // Create threads, passing index as argument to each
     for (int i = 0; i < num_threads; i++) {
         pthread_create(&threads[i], NULL, &worker, (void*)(intptr_t)i);
     }
 
+    // Wait for all threads to finish
     for (int i = 0; i < num_threads; i++) {
         assert(pthread_join(threads[i], NULL) == 0);
     }
 
+    // Free allocated memory for thread handles
     free(threads);
-    printf("Your random number is: %d\n", number );
+
+    // Print the resulting random number
+    printf("Your random number is: %d\n", number);
 }
