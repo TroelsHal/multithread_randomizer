@@ -5,8 +5,8 @@ LDFLAGS = -lpthread
 TARGET = randomizer
 SRC = randomizer.c
 
-# Default rule to build the program
-all: $(TARGET)
+# Default rule to build and run the program
+all: $(TARGET) run
 
 # Linking rule
 $(TARGET): $(SRC)
