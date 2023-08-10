@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 pthread_mutex_t counter_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condition;
@@ -16,7 +17,8 @@ unsigned int number;
 int num_threads = 9;
 
 void* worker (void *arg) {
-    int shift = 128>>(int)arg;
+    int index = (int)(intptr_t)arg; // Correct way to convert void* to int
+    int shift = 128 >> index;
     
     while(1) {
         assert(pthread_mutex_lock(&counter_mutex) == 0);
@@ -50,7 +52,7 @@ int main() {
     assert (pthread_cond_init(&condition, NULL) == 0);
 
     for (int i = 0; i < num_threads; i++) {
-        pthread_create(&threads[i], NULL, &worker, (void*)i);
+        pthread_create(&threads[i], NULL, &worker, (void*)(intptr_t)i);
     }
 
     for (int i = 0; i < num_threads; i++) {
@@ -58,5 +60,5 @@ int main() {
     }
 
     free(threads);
-    printf("Your random number is: %d", number);
+    printf("Your random number is: %d\n", number );
 }

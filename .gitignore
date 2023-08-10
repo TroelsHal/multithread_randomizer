@@ -1,0 +1,11 @@
+# Compiled binary
+randomizer
+
+# Object files
+*.o
+
+# Temporary files created by editors
+*~
+
+# Visual Studio Code configuration and cache
+.vscode/
