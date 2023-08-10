@@ -30,5 +30,5 @@ After 200 operations the threads terminate, and the final (random) number<br>is 
 <br>
 It's an 8-bit number, so there are 8 bits that are flipped.<br>
 But the program creates 9 peer threads. The 9'th thread doesn't flip any bit,<br>
-but it's presence is neccesary to make sure, that there are not always an<br>
+but it's presence is necessary to make sure, that there are not always an<br>
 even number (200) bit-flips.
