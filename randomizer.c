@@ -99,4 +99,6 @@ int main() {
 
     // Print the resulting random number
     printf("Your random number is: %u\n", number);
+
+    return EXIT_SUCCESS;
 }
